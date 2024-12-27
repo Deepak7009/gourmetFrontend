@@ -7,31 +7,78 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const vendorToken = localStorage.getItem("vendorToken");
-        if (!vendorToken) {
-          setError("Vendor token not found. Please login.");
-          setLoading(false);
-          return;
-        }
-
-        const config = {
-          headers: {
-            Authorization: `Bearer ${vendorToken}`,
-          },
-        };
-
-        const response = await axios.get(`${baseUrl}vendor/getCart`, config);
-        setCartData(response.data);
-      } catch (err) {
-        setError("Failed to fetch cart. Please try again.");
-      } finally {
+  const fetchCart = async () => {
+    try {
+      const vendorToken = localStorage.getItem("vendorToken");
+      if (!vendorToken) {
+        setError("Vendor token not found. Please login.");
         setLoading(false);
+        return;
       }
-    };
 
+      const config = {
+        headers: {
+          Authorization: `Bearer ${vendorToken}`,
+        },
+      };
+
+      const response = await axios.get(`${baseUrl}vendor/getCart`, config);
+      setCartData(response.data);
+    } catch (err) {
+      setError("Failed to fetch cart. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangeQuantity = async (cartItemId, quantity) => {
+    try {
+      if (quantity < 1) {
+        alert("Quantity cannot be less than 1.");
+        return;
+      }
+
+      const vendorToken = localStorage.getItem("vendorToken");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${vendorToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseUrl}vendor/updateCartItem`,
+        { cartItemId, quantity },
+        config
+      );
+
+      setCartData(response.data); // Update the cart with the latest data
+    } catch (err) {
+      console.error("Failed to update cart item:", err.message);
+    }
+  };
+
+  const handleRemoveItem = async (cartItemId) => {
+    try {
+      const vendorToken = localStorage.getItem("vendorToken");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${vendorToken}`,
+        },
+      };
+
+      await axios.post(
+        `${baseUrl}vendor/removeCartItem`, // Add a route for removing items
+        { cartItemId },
+        config
+      );
+
+      fetchCart(); // Refresh the cart after removing the item
+    } catch (err) {
+      console.error("Failed to remove cart item:", err.message);
+    }
+  };
+
+  useEffect(() => {
     fetchCart();
   }, []);
 
@@ -74,7 +121,7 @@ const Cart = () => {
                   className="bg-white shadow-md rounded-lg p-4"
                 >
                   <h3 className="font-semibold text-lg">
-                    {cartItem.item.name}
+                    {cartItem.item?.name}
                   </h3>
                   <p className="text-sm text-gray-600">
                     Price: ₹{cartItem.price}
@@ -85,6 +132,31 @@ const Cart = () => {
                   <p className="text-sm text-gray-600">
                     Subtotal: ₹{cartItem.price * cartItem.quantity}
                   </p>
+                  <div className="flex space-x-2 mt-2">
+                    <button
+                      onClick={() =>
+                        handleChangeQuantity(cartItem._id, cartItem.quantity - 1)
+                      }
+                      className="px-2 py-1 bg-gray-200 rounded"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 py-1">{cartItem.quantity}</span>
+                    <button
+                      onClick={() =>
+                        handleChangeQuantity(cartItem._id, cartItem.quantity + 1)
+                      }
+                      className="px-2 py-1 bg-gray-200 rounded"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveItem(cartItem._id)}
+                    className="mt-4 text-red-500 underline"
+                  >
+                    Remove
+                  </button>
                 </div>
               ))}
             </div>
