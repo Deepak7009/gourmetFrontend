@@ -3,16 +3,20 @@ import LoginRegister from "./Admin/LoginRegister";
 import "./App.css";
 import Home from "./components/Home";
 import { Route, Routes } from "react-router-dom";
-import VendorDashboard from "./Vendor/VendorDashboard";
+import Vendor from "./Vendor/Vendor";
+import Navbar from "./Vendor/Navbar";
+import Cart from "./Vendor/Cart";
 
 function App() {
   return (
     <>
-      <Home />
+      {/* <Home /> */}
+      <Navbar />
       <Routes>
         <Route path="/admin/*" element={<Dashboard />} />
         <Route path="/login" element={<LoginRegister />} />
-        <Route path="/vendorDashboard" element={<VendorDashboard />} />
+        <Route path="/vendorDashboard" element={<Vendor />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </>
   );
