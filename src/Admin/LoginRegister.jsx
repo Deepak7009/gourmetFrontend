@@ -1,28 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { baseUrl } from "../../../utils/const";
 import { useNavigate } from "react-router-dom";
-import loginImg from "../../../assets/images/marketerLogin.png";
-import signUpImg from "../../../assets/images/marketerSignup.png";
+import { baseUrl } from "../utils/const";
 
-const MarketerLoginRegister = () => {
+const LoginRegister = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [performing, setPerforming] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    // mobile: "",
     email: "",
     password: "",
-    // state: "",
-    // city: "",
-    // gender: "",
-    // recaptchaValue: "",
-    // refer: "",
-    // emailOtp: "", // Added for email OTP
-    // mobileOtp: "", // Added for mobile OTP
   });
   const [message, setMessage] = useState("");
-//   const [emailOrMobile, setEmailOrMobile] = useState(""); // New state for email or mobile input
+  const [emailOrMobile, setEmailOrMobile] = useState(""); // New state for email or mobile input
   const [showOTPFields, setShowOTPFields] = useState(false); // Flag for showing OTP fields
   const [isForgotPassword, setIsForgotPassword] = useState(false); // Flag for forgot password flow
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState(""); // State for forgot password email
@@ -47,7 +37,7 @@ const MarketerLoginRegister = () => {
     if (isLogin) {
       try {
         setPerforming(true);
-        const response = await axios.post(`${baseUrl}loginMarketer`, {
+        const response = await axios.post(`${baseUrl}admin/login`, {
           emailOrMobile, // Send emailOrMobile for login
           password: formData.password,
         });
@@ -61,7 +51,7 @@ const MarketerLoginRegister = () => {
       // Handle registration API call
       try {
         setPerforming(true);
-        const response = await axios.post(`${baseUrl}registerMarketer`, formData);
+        const response = await axios.post(`${baseUrl}admin/signup`, formData);
         setMessage(response.data.msg);
         setShowOTPFields(true); // Show OTP fields after successful registration
       } catch (error) {
@@ -81,18 +71,15 @@ const MarketerLoginRegister = () => {
       <div className="p-4">
         <div className="flex w-full sm:max-w-lg lg:max-w-4xl bg-white rounded-lg shadow-md transition-all">
           {/* Left side Image */}
-          <div className="hidden sm:block w-1/2 h-full flex justify-center items-center bg-blue-200">
+          {/* <div className="hidden sm:block w-1/2 h-full flex justify-center items-center bg-blue-200">
             <div className="p-1">
-              {/* Conditionally render images based on isLogin */}
               {isLogin ? (
-                // eslint-disable-next-line jsx-a11y/img-redundant-alt
                 <img
                   src={loginImg}
                   alt="Login Image"
                   className="w-full h-full object-cover"
                 />
               ) : (
-                // eslint-disable-next-line jsx-a11y/img-redundant-alt
                 <img
                   src={signUpImg}
                   alt="Signup Image"
@@ -100,9 +87,9 @@ const MarketerLoginRegister = () => {
                 />
               )}
             </div>
-          </div>
+          </div> */}
           {/* Right side Form */}
-          <div className="w-full sm:w-1/2 p-6 lg:p-4">
+          <div className="w-full  p-6 lg:p-4">
             <div className="p-4 bg-gray-100">
               <h2 className="text-2xl lg:text-3xl font-bold text-center mb-6">
                 {isLogin ? "Login Form" : "Signup Form"}
@@ -143,7 +130,7 @@ const MarketerLoginRegister = () => {
                     />
                     <button
                       type="button"
-                      onClick={handleForgotPasswordRequest}
+                    //   onClick={handleForgotPasswordRequest}
                       className="w-full py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                     >
                       Request OTP
@@ -177,7 +164,7 @@ const MarketerLoginRegister = () => {
                     />
                     <button
                       type="button"
-                      onClick={handleResetPassword}
+                    //   onClick={handleResetPassword}
                       className="w-full py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                     >
                       Reset Password
@@ -243,7 +230,7 @@ const MarketerLoginRegister = () => {
                             value={formData.name}
                             onChange={handleChange}
                           />
-                          <input
+                          {/* <input
                             type="tel"
                             onInput={(e) => {
                               e.target.value = e.target.value.replace(
@@ -256,7 +243,7 @@ const MarketerLoginRegister = () => {
                             className="w-full sm:w-1/2 px-4 py-2 mb-4 border rounded-lg text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={formData.mobile}
                             onChange={handleChange}
-                          />
+                          /> */}
                         </div>
 
                         <input
@@ -344,4 +331,4 @@ const MarketerLoginRegister = () => {
   );
 };
 
-export default MarketerLoginRegister;
+export default LoginRegister;
