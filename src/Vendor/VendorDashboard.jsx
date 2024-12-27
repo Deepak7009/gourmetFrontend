@@ -25,16 +25,33 @@ const VendorDashboard = () => {
     fetchItems();
   }, []);
 
-  const handleAddToCart = (itemId) => {
-    setCart((prevCart) => {
-      const newCart = { ...prevCart };
-      if (newCart[itemId]) {
-        newCart[itemId] += 1; // Increase quantity if item already in cart
-      } else {
-        newCart[itemId] = 1; // Add item with quantity 1
+  const handleAddToCart = async (itemId) => {
+    try {
+      // Get the vendor token from localStorage
+      const vendorToken = localStorage.getItem('vendorToken');
+      
+      if (!vendorToken) {
+        alert("You are not logged in.");
+        return;
       }
-      return newCart;
-    });
+
+      // Call the API to add the item to the cart
+      const response = await axios.post(
+        `${baseUrl}vendor/addToCard`,
+        { productId: itemId, quantity: 1 }, // Assuming quantity is 1 for now
+        {
+          headers: {
+            Authorization: `Bearer ${vendorToken}`,
+          },
+        }
+      );
+
+      // Update the cart in the state (response can include updated cart data)
+      setCart(response.data);
+    } catch (err) {
+      console.error("Error adding to cart:", err.message);
+      setError(err.message);
+    }
   };
 
   const handleRemoveFromCart = (itemId) => {

@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import Vendor from "./Vendor/Vendor";
 import Navbar from "./Vendor/Navbar";
 import Cart from "./Vendor/Cart";
+import VendorLogin from "./Vendor/VendorLogin";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/admin/*" element={<Dashboard />} />
         <Route path="/login" element={<LoginRegister />} />
+        <Route path="/vendorLogin" element={<VendorLogin />} />
         <Route path="/vendorDashboard" element={<Vendor />} />
         <Route path="/cart" element={<Cart />} />
       </Routes>
