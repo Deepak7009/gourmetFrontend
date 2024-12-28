@@ -8,9 +8,14 @@ const VendorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cartQuantities, setCartQuantities] = useState({}); // State to manage the quantity of each item
+  const [vendorToken, setVendorToken] = useState(false);
 
   useEffect(() => {
     const fetchItems = async () => {
+      const vendorToken = localStorage.getItem('vendorToken');
+      if (vendorToken) {
+        setVendorToken(true)
+      }
       try {
         const response = await axios.get(`${baseUrl}vendor/items`); // Replace with your actual API endpoint
         setItems(response.data);
@@ -102,15 +107,14 @@ const VendorDashboard = () => {
               <p className="mt-2 text-gray-800 font-bold">Price: ${item.price}</p>
               <div className="flex justify-between items-center mt-4">
                 <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    item.status === 'available'
-                      ? 'bg-green-200 text-green-800'
-                      : 'bg-red-200 text-red-800'
-                  }`}
+                  className={`px-3 py-1 text-xs font-semibold rounded-full ${item.status === 'available'
+                    ? 'bg-green-200 text-green-800'
+                    : 'bg-red-200 text-red-800'
+                    }`}
                 >
                   {item.status}
                 </span>
-                <div className="flex items-center">
+                <div className={`${vendorToken ? 'flex' : 'hidden'} items-center`}>
                   <button
                     onClick={() => handleQuantityChange(item._id, -1)}
                     className="px-2 py-1 bg-gray-300 text-gray-800 rounded-full mr-2"
