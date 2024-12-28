@@ -15,6 +15,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import GetAllProduct from "./GetAllProduct";
 import CreateProduct from "./CreateProduct";
+import VendorAllOrder from "./VendorAllOrder";
 
 const VendorDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -307,9 +308,10 @@ const VendorDashboard = () => {
           <Routes>
           <Route path="allProducts" element={<GetAllProduct />} />
           <Route path="createProduct" element={<CreateProduct />} />
+          <Route path="allOrders" element={<VendorAllOrder />} />
+
             {/* <Route path="createVendor" element={<CreateVendor />} />
             <Route path="allVendors" element={<GetAllVendors />} />
-            <Route path="allOrders" element={<GetAllOrders />} />
             <Route path="profile" element={<Profile />} />
             <Route path="changePassword" element={<ChangePasswords />} /> */}
           </Routes>

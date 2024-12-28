@@ -98,7 +98,7 @@ const Cart = () => {
 
       const response = await axios.post(
         `${baseUrl}customerCare/createOrder`,
-        { vendorId: selectedVendor },
+        { selectedVendor },
         config
       );
 
