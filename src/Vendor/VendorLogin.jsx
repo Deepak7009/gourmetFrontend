@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseUrl } from "../utils/const";
 
-const VendorLogin = ({ setAdminLoggedIn }) => {
+const VendorLogin = ({ setAdminLoggedIn, setVendorLoggedIn }) => {
   const navigate = useNavigate();
 
   // State for form data and loading/error states
@@ -31,6 +31,7 @@ const VendorLogin = ({ setAdminLoggedIn }) => {
         localStorage.setItem("vendorToken", response.data.token);
         localStorage.removeItem("adminToken")
         setAdminLoggedIn(false)
+        setVendorLoggedIn(true);
 
         // Navigate to vendor dashboard
         navigate("/vendorDashboard");

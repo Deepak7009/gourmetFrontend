@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaCartPlus } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ vendorLoggedIn }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false); // State to toggle profile menu
   const navigate = useNavigate();
@@ -14,10 +14,13 @@ const Navbar = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, []);
+  }, [vendorLoggedIn, isLoggedIn]);
+
+
 
   // Handle logout
   const handleLogout = () => {
+    setShowProfileMenu(false)
     localStorage.removeItem("vendorToken"); // Remove token from localStorage
     setIsLoggedIn(false); // Update state to reflect logged-out status
     navigate("/vendorLogin"); // Redirect to login page
