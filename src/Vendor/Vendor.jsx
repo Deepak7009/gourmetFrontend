@@ -1,14 +1,11 @@
-import React from "react";
-import VendorDashboard from "./VendorDashboard";
-import Navbar from "./Navbar";
+import React from 'react'
 
 const Vendor = () => {
   return (
     <div>
-      {/* <Navbar /> */}
-      <VendorDashboard />
+      
     </div>
-  );
-};
+  )
+}
 
-export default Vendor;
+export default Vendor

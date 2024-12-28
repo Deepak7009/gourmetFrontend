@@ -2,39 +2,39 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { baseUrl } from "../utils/const";
 
-const GetAllVendors = () => {
-  const [vendors, setVendors] = useState([]);
+const GetAllCustomerCares = () => {
+  const [customerCares, setCustomerCares] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchVendors = async () => {
+    const fetchCustomerCares = async () => {
       const adminToken = localStorage.getItem("adminToken"); // Get token from localStorage
 
       try {
-        const response = await axios.get(`${baseUrl}admin/vendors`, {
+        const response = await axios.get(`${baseUrl}admin/customerCares`, {
           headers: {
             Authorization: `Bearer ${adminToken}`, // Pass token in header
           },
         });
-        setVendors(response.data); // Set the vendors state with the response
+        setCustomerCares(response.data); // Set the customerCares state with the response
       } catch (err) {
-        setError("Failed to fetch vendors");
+        setError("Failed to fetch customerCares");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVendors();
+    fetchCustomerCares();
   }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="text-2xl font-bold mb-6">All Vendors</h2>
+      <h2 className="text-2xl font-bold mb-6">All CustomerCares</h2>
 
       {loading ? (
-        <p className="text-center text-gray-500">Loading vendors...</p>
+        <p className="text-center text-gray-500">Loading customerCares...</p>
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : (
@@ -49,13 +49,13 @@ const GetAllVendors = () => {
               </tr>
             </thead>
             <tbody>
-              {vendors.map((vendor) => (
-                <tr key={vendor._id}>
-                  <td className="px-4 py-2 border-b">{vendor.name}</td>
-                  <td className="px-4 py-2 border-b">{vendor.email}</td>
-                  <td className="px-4 py-2 border-b">{vendor.role}</td>
+              {customerCares.map((customerCare) => (
+                <tr key={customerCare._id}>
+                  <td className="px-4 py-2 border-b">{customerCare.name}</td>
+                  <td className="px-4 py-2 border-b">{customerCare.email}</td>
+                  <td className="px-4 py-2 border-b">{customerCare.role}</td>
                   <td className="px-4 py-2 border-b">
-                    {new Date(vendor.createdAt).toLocaleDateString()}
+                    {new Date(customerCare.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
               ))}
@@ -67,4 +67,4 @@ const GetAllVendors = () => {
   );
 };
 
-export default GetAllVendors;
+export default GetAllCustomerCares;

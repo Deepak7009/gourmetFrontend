@@ -3,7 +3,7 @@
 // import { baseUrl } from '../utils/const';
 // import { Link } from 'react-router-dom';
 
-// const VendorAllProducts = () => {
+// const CustomerCareAllProducts = () => {
 //     const [items, setItems] = useState([]);
 //     const [loading, setLoading] = useState(true);
 //     const [error, setError] = useState(null);
@@ -36,7 +36,7 @@
 //     useEffect(() => {
 //         const fetchItems = async () => {
 //             try {
-//                 const response = await axios.get(`${baseUrl}vendor/items`);
+//                 const response = await axios.get(`${baseUrl}customerCare/items`);
 //                 setItems(response.data);
 //                 setLoading(false);
 //             } catch (err) {
@@ -76,14 +76,14 @@
 //     );
 // };
 
-// export default VendorAllProducts;
+// export default CustomerCareAllProducts;
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { baseUrl } from '../utils/const';
 import { Link } from 'react-router-dom';
 
-const VendorAllProducts = () => {
+const CustomerCareAllProducts = () => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -127,7 +127,7 @@ const VendorAllProducts = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await axios.get(`${baseUrl}vendor/items`);
+                const response = await axios.get(`${baseUrl}customerCare/items`);
                 setItems(groupItemsByCompanyAndProduct(response.data));
                 setLoading(false);
             } catch (err) {
@@ -187,4 +187,4 @@ const VendorAllProducts = () => {
     );
 };
 
-export default VendorAllProducts;
+export default CustomerCareAllProducts;

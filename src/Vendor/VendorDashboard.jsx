@@ -1,144 +1,319 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { baseUrl } from '../utils/const';
-import { FaCartPlus } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  FaSearch,
+  FaArrowRight,
+  FaHome,
+  FaUser,
+  FaCog,
+  FaBriefcase,
+  FaSignOutAlt,
+  FaUserPlus,
+} from "react-icons/fa";
+// import axios from "axios";
+// import { baseUrl } from "../../../utils/const";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import GetAllProduct from "./GetAllProduct";
+import CreateProduct from "./CreateProduct";
 
 const VendorDashboard = () => {
-  const [items, setItems] = useState([]);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("Dashboard");
+  const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cartQuantities, setCartQuantities] = useState({}); // State to manage the quantity of each item
-  const [vendorToken, setVendorToken] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const sidebarRef = useRef(null);
 
+  // Close sidebar on outside click
   useEffect(() => {
-    const fetchItems = async () => {
-      const vendorToken = localStorage.getItem('vendorToken');
-      if (vendorToken) {
-        setVendorToken(true)
-      }
-      try {
-        const response = await axios.get(`${baseUrl}vendor/items`); // Replace with your actual API endpoint
-        setItems(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setSidebarOpen(false);
       }
     };
 
-    fetchItems();
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
-  const handleQuantityChange = (itemId, change) => {
-    setCartQuantities((prev) => {
-      const updatedQuantities = { ...prev };
-      const currentQuantity = updatedQuantities[itemId] || 0;
-
-      if (change === -1 && currentQuantity === 0) {
-        return updatedQuantities; // Prevent negative quantities
-      }
-
-      updatedQuantities[itemId] = currentQuantity + change;
-      return updatedQuantities;
-    });
-  };
-
-  const handleAddToCart = async (itemId) => {
-    try {
-      const vendorToken = localStorage.getItem('vendorToken');
-
-      if (!vendorToken) {
-        alert('You are not logged in.');
-        return;
-      }
-
-      const quantity = cartQuantities[itemId] || 0;
-      if (quantity === 0) {
-        alert('Please select a quantity before adding to the cart.');
-        return;
-      }
-
-      const response = await axios.post(
-        `${baseUrl}vendor/addToCard`,
-        { productId: itemId, quantity },
+  const cards = dashboardData
+    ? [
         {
-          headers: {
-            Authorization: `Bearer ${vendorToken}`,
-          },
-        }
-      );
+          title: "Total Adv",
+          count: dashboardData.adv.total,
+          section: "Dashboard",
+          pageLink: "/vendor/advStatus?stat=all",
+        },
+        {
+          title: "Pending Adv",
+          count: dashboardData.adv.pending,
+          section: "Dashboard",
+          pageLink: "/marketerDashboard/advStatus?stat=pending",
+        },
+        {
+          title: "Completed Adv",
+          count: dashboardData.adv.completed,
+          section: "Dashboard",
+          pageLink: "/marketerDashboard/advStatus?stat=completed",
+        },
+        {
+          title: "Rejected Adv",
+          count: dashboardData.adv.rejected,
+          section: "Dashboard",
+          pageLink: "/marketerDashboard/advStatus?stat=rejected",
+        },
+      ]
+    : [];
 
-      alert('Item added to cart successfully!'); // Optional success alert
-    } catch (err) {
-      console.error('Error adding to cart:', err.message);
-      setError(err.message);
-    }
+  const filteredCards = cards.filter((card) => card.section === activeSection);
+  const menuItems = [
+    {
+      name: "Dashboard",
+      icon: <FaHome />,
+      route: "/vendor",
+    },
+    // {
+    //   name: "Create Vendor",
+    //   icon: <FaUser />,
+    //   route: "/vendor/createVendor",
+    // },
+    // {
+    //   name: "All Vendors",
+    //   icon: <FaCog />,
+    //   route: "/vendor/allVendors",
+    // },
+    {
+      name: "Create Product",
+      icon: <FaBriefcase />,
+      route: "/vendor/createProduct",
+    },
+    {
+      name: "All Products",
+      icon: <FaBriefcase />,
+      route: "/vendor/allProducts",
+    },
+    {
+      name: "All Orders",
+      icon: <FaBriefcase />,
+      route: "/vendor/allOrders",
+    },
+  ];
+
+  const accountItems = [
+    {
+      name: "Profile",
+      icon: <FaUser />,
+      route: "/vendor/profile",
+    },
+    {
+      name: "Change Password",
+      icon: <FaCog />,
+      route: "/vendor/changePassword",
+    },
+  ];
+
+  const handleNavigation = (section, route) => {
+    setActiveSection(section);
+    navigate(route);
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-2xl text-gray-500">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-2xl text-red-500">Error: {error}</div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const currentRoute = location.pathname;
+    const allItems = [...menuItems, ...accountItems];
+    const matchedItem = allItems.find((item) => item.route === currentRoute);
+    if (matchedItem) {
+      setActiveSection(matchedItem.name);
+    }
+  }, [location.pathname]);
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item) => (
-          <div key={item._id} className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <img
-              src={item.photo || 'https://via.placeholder.com/400'}
-              alt={item.name}
-              className="w-full h-64 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-              <p className="text-gray-600">{item.description}</p>
-              <p className="mt-2 text-gray-800 font-bold">Price: ${item.price}</p>
-              <div className="flex justify-between items-center mt-4">
-                <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full ${item.status === 'available'
-                    ? 'bg-green-200 text-green-800'
-                    : 'bg-red-200 text-red-800'
-                    }`}
+    <div className="flex min-h-screen bg-gray-50 pt-2">
+      {/* Sidebar */}
+      <aside
+        ref={sidebarRef}
+        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-all duration-300 ease-in-out lg:translate-x-0 lg:relative z-10`}
+      >
+        <div className="p-6 bg-blue-600 text-white font-bold text-lg">
+          Vendor Panal
+        </div>
+        <nav className="p-4 space-y-4">
+          <div>
+            <h3 className="text-gray-500 font-semibold mb-2">OTHER</h3>
+            <ul className="space-y-2">
+              {menuItems.map((item, index) => (
+                <li
+                  key={index}
+                  className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
+                    activeSection === item.name
+                      ? "bg-blue-500 text-white"
+                      : "text-gray-700"
+                  }`}
                 >
-                  {item.status}
-                </span>
-                <div className={`${vendorToken ? 'flex' : 'hidden'} items-center`}>
                   <button
-                    onClick={() => handleQuantityChange(item._id, -1)}
-                    className="px-2 py-1 bg-gray-300 text-gray-800 rounded-full mr-2"
+                    className="flex items-center space-x-2"
+                    onClick={() => {
+                      handleNavigation(item.name, item.route);
+                      setSidebarOpen(false);
+                    }}
                   >
-                    -
+                    <span>{item.icon}</span>
+                    <span>{item.name}</span>
                   </button>
-                  <span className="text-lg font-semibold">{cartQuantities[item._id] || 0}</span>
-                  <button
-                    onClick={() => handleQuantityChange(item._id, 1)}
-                    className="px-2 py-1 bg-gray-300 text-gray-800 rounded-full ml-2"
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => handleAddToCart(item._id)}
-                    className="ml-4 p-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600"
-                  >
-                    <FaCartPlus />
-                  </button>
-                </div>
-              </div>
-            </div>
+                </li>
+              ))}
+            </ul>
           </div>
-        ))}
+          <div>
+            <h3 className="text-gray-500 font-semibold mb-2">ACCOUNTS</h3>
+            <ul className="space-y-2">
+              {accountItems.map((item, index) => (
+                <li
+                  key={index}
+                  className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
+                    activeSection === item.name
+                      ? "bg-blue-500 text-white"
+                      : "text-gray-700"
+                  }`}
+                >
+                  <button
+                    className="flex items-center space-x-2"
+                    onClick={() => {
+                      handleNavigation(item.name, item.route);
+                      setSidebarOpen(false);
+                    }}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.name}</span>
+                  </button>
+                </li>
+              ))}
+              {/* <li
+                key={3}
+                className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
+                  activeSection === "Invite"
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-700"
+                }`}
+              >
+                <button
+                  className="flex items-center space-x-2"
+                  //   onClick={handleReferralClick}
+                >
+                  <span>
+                    <FaUserPlus />
+                  </span>
+                  <span>Invite</span>
+                </button>
+              </li> */}
+              <li
+                key={3}
+                className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
+                  activeSection === "Log out"
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-700"
+                }`}
+              >
+                <button
+                  className="flex items-center space-x-2"
+                  //   onClick={handleLogout}
+                >
+                  <span>
+                    <FaSignOutAlt />
+                  </span>
+                  <span>Log out</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      {/* Main content area */}
+      <div className="flex-1 w-screen overflow-scroll md:w-full md:overflow-hidden lg:overflow-hidden lg:w-full">
+        <div className="shadow-[0_4px_10px_0_rgba(59,130,246,0.5)] p-4">
+          <header className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold text-gray-800">
+              Vendor Panal
+            </h1>
+            <Link
+              to="/"
+              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition duration-300"
+            >
+              Home
+            </Link>
+            {/* <div className="flex items-center space-x-2 border p-2 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500">
+              <FaSearch className="text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="outline-none bg-transparent placeholder-gray-500"
+              />
+            </div> */}
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setSidebarOpen(!isSidebarOpen)}
+              className={`lg:hidden mb-4 p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ${
+                isSidebarOpen ? "hidden" : ""
+              } `}
+            >
+              ☰
+            </button>
+            <button
+              onClick={() => setSidebarOpen(!isSidebarOpen)}
+              className={`lg:hidden mb-4 p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ${
+                isSidebarOpen ? "" : "hidden"
+              } `}
+            >
+              ☰
+            </button>
+          </header>
+        </div>
+
+        {/* Card Section */}
+        <div className="p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredCards.map((card, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105 duration-300 flex items-center justify-between"
+              >
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {card.title}
+                  </h2>
+                  <p className="text-3xl font-bold text-blue-600">
+                    {card.count}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate(card.pageLink)}
+                  className="bg-blue-500 text-white py-2 px-4 rounded-full shadow-md hover:bg-blue-600 transition-colors duration-300"
+                >
+                  <FaArrowRight />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Nested route rendering */}
+        <div className="p-6 w-full overflow-scroll">
+          <Routes>
+          <Route path="allProducts" element={<GetAllProduct />} />
+          <Route path="createProduct" element={<CreateProduct />} />
+            {/* <Route path="createVendor" element={<CreateVendor />} />
+            <Route path="allVendors" element={<GetAllVendors />} />
+            <Route path="allOrders" element={<GetAllOrders />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="changePassword" element={<ChangePasswords />} /> */}
+          </Routes>
+        </div>
       </div>
     </div>
   );

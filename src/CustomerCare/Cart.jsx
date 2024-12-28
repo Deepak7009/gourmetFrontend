@@ -11,20 +11,20 @@ const Cart = () => {
 
   const fetchCart = async () => {
     try {
-      const vendorToken = localStorage.getItem("vendorToken");
-      if (!vendorToken) {
-        setError("Vendor token not found. Please login.");
+      const customerCareToken = localStorage.getItem("customerCareToken");
+      if (!customerCareToken) {
+        setError("CustomerCare token not found. Please login.");
         setLoading(false);
         return;
       }
 
       const config = {
         headers: {
-          Authorization: `Bearer ${vendorToken}`,
+          Authorization: `Bearer ${customerCareToken}`,
         },
       };
 
-      const response = await axios.get(`${baseUrl}vendor/getCart`, config);
+      const response = await axios.get(`${baseUrl}customerCare/getCart`, config);
       setCartData(response.data);
     } catch (err) {
       setError("Failed to fetch cart. Please try again.");
@@ -54,20 +54,20 @@ const Cart = () => {
 
   const placeOrder = async () => {
     try {
-      const vendorToken = localStorage.getItem("vendorToken");
-      if (!vendorToken) {
+      const customerCareToken = localStorage.getItem("customerCareToken");
+      if (!customerCareToken) {
         alert("Please login to place an order.");
         return;
       }
 
       const config = {
         headers: {
-          Authorization: `Bearer ${vendorToken}`,
+          Authorization: `Bearer ${customerCareToken}`,
         },
       };
 
       const response = await axios.post(
-        `${baseUrl}vendor/createOrder`, 
+        `${baseUrl}customerCare/createOrder`, 
         {},
         config
       );
@@ -88,15 +88,15 @@ const Cart = () => {
         return;
       }
 
-      const vendorToken = localStorage.getItem("vendorToken");
+      const customerCareToken = localStorage.getItem("customerCareToken");
       const config = {
         headers: {
-          Authorization: `Bearer ${vendorToken}`,
+          Authorization: `Bearer ${customerCareToken}`,
         },
       };
 
       const response = await axios.post(
-        `${baseUrl}vendor/updateCartItem`,
+        `${baseUrl}customerCare/updateCartItem`,
         { cartItemId, quantity },
         config
       );
@@ -109,15 +109,15 @@ const Cart = () => {
 
   const handleRemoveItem = async (cartItemId) => {
     try {
-      const vendorToken = localStorage.getItem("vendorToken");
+      const customerCareToken = localStorage.getItem("customerCareToken");
       const config = {
         headers: {
-          Authorization: `Bearer ${vendorToken}`,
+          Authorization: `Bearer ${customerCareToken}`,
         },
       };
 
       await axios.post(
-        `${baseUrl}vendor/removeCartItem`,
+        `${baseUrl}customerCare/removeCartItem`,
         { cartItemId },
         config
       );

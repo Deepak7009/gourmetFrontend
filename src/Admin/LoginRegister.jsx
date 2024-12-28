@@ -43,7 +43,7 @@ const LoginRegister = ({ setAdminLoggedIn }) => {
         });
         setMessage("Login successful!");
         localStorage.setItem("adminToken", response.data.token);
-        localStorage.removeItem('vendorToken')
+        localStorage.removeItem('customerCareToken')
         setAdminLoggedIn(true)
         navigate("/admin"); // Navigate to dashboard or home page after login
       } catch (error) {

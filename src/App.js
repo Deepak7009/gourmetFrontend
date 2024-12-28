@@ -2,35 +2,59 @@ import Dashboard from "./Admin/Dashboard";
 import LoginRegister from "./Admin/LoginRegister";
 import "./App.css";
 import Home from "./components/Home";
-import { Route, Routes } from "react-router-dom";
-import Vendor from "./Vendor/Vendor";
-import Navbar from "./Vendor/Navbar";
-import Cart from "./Vendor/Cart";
-import VendorLogin from "./Vendor/VendorLogin";
-import VendorAllProducts from "./Vendor/VendorAllProducts";
-import CartPage from "./Vendor/CartPage";
+import { Route, Routes, useLocation } from "react-router-dom";
+import CustomerCare from "./CustomerCare/CustomerCare";
+import Navbar from "./CustomerCare/Navbar";
+import Cart from "./CustomerCare/Cart";
+import CustomerCareLogin from "./CustomerCare/CustomerCareLogin";
+import CustomerCareAllProducts from "./CustomerCare/CustomerCareAllProducts";
+import CartPage from "./CustomerCare/CartPage";
 import { useEffect, useState } from "react";
+import VendorDashboard from "./Vendor/VendorDashboard";
+import VendorLogin from "./Vendor/VendorLogin";
 
 function App() {
-  const [adminLoggedIn, setAdminLoggedIn] = useState(false)
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [customerCareLoggedIn, setCustomerCareLoggedIn] = useState(false);
   useEffect(() => {
-    const adminToken = localStorage.getItem('adminToken')
+    const adminToken = localStorage.getItem("adminToken");
     if (adminToken) {
-      setAdminLoggedIn(true)
+      setAdminLoggedIn(true);
     } else {
-      setAdminLoggedIn(false)
+      setAdminLoggedIn(false);
     }
-  }, [])
+  }, []);
+  const location = useLocation(); // Get current location
+  const isVendorRoute = location.pathname.startsWith("/admin");
+  const isAdminRoute = location.pathname.startsWith("/vendor");
+
   return (
     <>
       {/* <Home /> */}
-      {!adminLoggedIn && <Navbar />}
+      {!isAdminRoute && !isVendorRoute && <Navbar />}
+      {/* {!adminLoggedIn && <Navbar customerCareLoggedIn={customerCareLoggedIn} />} */}
       <Routes>
         <Route path="/admin/*" element={<Dashboard />} />
-        <Route path="/login" element={<LoginRegister setAdminLoggedIn={setAdminLoggedIn}/>} />
-        <Route path="/vendorLogin" element={<VendorLogin setAdminLoggedIn={setAdminLoggedIn} />} />
-        <Route path="/vendorDashboard" element={<Vendor />} />
-        <Route path="/vendorDashboardNew" element={<VendorAllProducts />} />
+        <Route path="/vendor/*" element={<VendorDashboard />} />
+        <Route
+          path="/login"
+          element={<LoginRegister setAdminLoggedIn={setAdminLoggedIn} />}
+        />
+        <Route
+          path="/customerCareLogin"
+          element={
+            <CustomerCareLogin
+              setAdminLoggedIn={setAdminLoggedIn}
+              setCustomerCareLoggedIn={setCustomerCareLoggedIn}
+            />
+          }
+        />
+        <Route path="/vendorLogin" element={<VendorLogin />} />
+        <Route path="/customerCareDashboard" element={<CustomerCare />} />
+        <Route
+          path="/customerCareDashboardNew"
+          element={<CustomerCareAllProducts />}
+        />
         <Route path="/cart" element={<Cart />} />
         <Route path="/cartPage" element={<CartPage />} />
       </Routes>

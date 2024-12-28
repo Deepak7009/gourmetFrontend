@@ -13,13 +13,15 @@ import {
 // import { baseUrl } from "../../../utils/const";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
-import CreateVendor from "./CreateVendor";
-import GetAllVendors from "./GetAllVendors";
+import CreateCustomerCare from "./CreateCustomerCare";
+import GetAllCustomerCares from "./GetAllCustomerCare";
 import CreateProduct from "./CreateProduct";
 import GetAllProducts from "./GetAllProducts";
 import GetAllOrders from "./GetAllOrders";
 import Profile from "./Profile";
 import ChangePasswords from "./ChangePasswords";
+import CreateVendor from "./CreateVendor";
+import GetAllVendors from "./GetAllVendors";
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -35,7 +37,7 @@ const Dashboard = () => {
   useEffect(() => {
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
-      navigate('/vendorDashboard')
+      navigate('/customerCareDashboard')
     }
     
     const handleClickOutside = (event) => {
@@ -85,6 +87,16 @@ const Dashboard = () => {
       name: "Dashboard",
       icon: <FaHome />,
       route: "/admin",
+    },
+    {
+      name: "Create CustomerCare",
+      icon: <FaUser />,
+      route: "/admin/createCustomerCare",
+    },
+    {
+      name: "All CustomerCares",
+      icon: <FaCog />,
+      route: "/admin/allCustomerCares",
     },
     {
       name: "Create Vendor",
@@ -316,6 +328,8 @@ const Dashboard = () => {
         {/* Nested route rendering */}
         <div className="p-6 w-full overflow-scroll">
           <Routes>
+            <Route path="createCustomerCare" element={<CreateCustomerCare />} />
+            <Route path="allCustomerCares" element={<GetAllCustomerCares />} />
             <Route path="createVendor" element={<CreateVendor />} />
             <Route path="allVendors" element={<GetAllVendors />} />
             <Route path="createProduct" element={<CreateProduct />} />

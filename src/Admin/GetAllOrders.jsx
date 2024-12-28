@@ -48,7 +48,7 @@ const GetAllOrders = () => {
           <thead>
             <tr className="bg-gray-200">
               <th className="border border-gray-300 p-2">Order ID</th>
-              <th className="border border-gray-300 p-2">Vendor</th>
+              <th className="border border-gray-300 p-2">CustomerCare</th>
               <th className="border border-gray-300 p-2">Order Date</th>
               <th className="border border-gray-300 p-2">Total Price</th>
             </tr>
@@ -61,7 +61,7 @@ const GetAllOrders = () => {
                   onClick={() => toggleExpand(order._id)}
                 >
                   <td className="border border-gray-300 p-2 text-center">{order._id}</td>
-                  <td className="border border-gray-300 p-2 text-center">{order.vendor?.name || "N/A"}</td>
+                  <td className="border border-gray-300 p-2 text-center">{order.customerCare?.name || "N/A"}</td>
                   <td className="border border-gray-300 p-2 text-center">
                     {new Date(order.orderDate).toLocaleDateString()}
                   </td>

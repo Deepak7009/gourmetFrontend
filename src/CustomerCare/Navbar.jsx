@@ -2,25 +2,28 @@ import React, { useState, useEffect } from "react";
 import { FaCartPlus } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ customerCareLoggedIn }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false); // State to toggle profile menu
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("vendorToken");
+    const token = localStorage.getItem("customerCareToken");
     if (token) {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
     }
-  }, []);
+  }, [customerCareLoggedIn, isLoggedIn]);
+
+
 
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem("vendorToken"); // Remove token from localStorage
+    setShowProfileMenu(false)
+    localStorage.removeItem("customerCareToken"); // Remove token from localStorage
     setIsLoggedIn(false); // Update state to reflect logged-out status
-    navigate("/vendorLogin"); // Redirect to login page
+    navigate("/customerCareLogin"); // Redirect to login page
   };
 
   return (
@@ -102,7 +105,7 @@ const Navbar = () => {
           ) : (
             // Login Button
             <Link
-              to="/vendorLogin"
+              to="/customerCareLogin"
               className="text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
             >
               Login
