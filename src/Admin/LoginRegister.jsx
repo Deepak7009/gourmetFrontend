@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../utils/const";
 
-const LoginRegister = () => {
+const LoginRegister = ({ setAdminLoggedIn }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [performing, setPerforming] = useState(false);
   const [formData, setFormData] = useState({
@@ -43,6 +43,8 @@ const LoginRegister = () => {
         });
         setMessage("Login successful!");
         localStorage.setItem("adminToken", response.data.token);
+        localStorage.removeItem('vendorToken')
+        setAdminLoggedIn(true)
         navigate("/admin"); // Navigate to dashboard or home page after login
       } catch (error) {
         setMessage(error.response ? error.response.data.msg : "Login failed.");
@@ -60,7 +62,7 @@ const LoginRegister = () => {
     }
     setPerforming(false);
   };
-  
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -97,21 +99,19 @@ const LoginRegister = () => {
 
               <div className="flex mb-6 rounded-full overflow-hidden border border-gray-300">
                 <button
-                  className={`w-1/2 py-2 text-lg font-semibold transition-colors duration-200 ${
-                    isLogin
-                      ? "text-white bg-gradient-to-r from-[#003580] to-[#0072e5] shadow-md"
-                      : "text-gray-600 bg-white"
-                  } rounded-full`}
+                  className={`w-1/2 py-2 text-lg font-semibold transition-colors duration-200 ${isLogin
+                    ? "text-white bg-gradient-to-r from-[#003580] to-[#0072e5] shadow-md"
+                    : "text-gray-600 bg-white"
+                    } rounded-full`}
                   onClick={() => setIsLogin(true)}
                 >
                   Login
                 </button>
                 <button
-                  className={`w-1/2 py-2 text-lg font-semibold transition-colors duration-200 ${
-                    !isLogin
-                      ? "text-white bg-gradient-to-r from-[#003580] to-[#0072e5] shadow-md"
-                      : "text-gray-600 bg-white"
-                  } rounded-full`}
+                  className={`w-1/2 py-2 text-lg font-semibold transition-colors duration-200 ${!isLogin
+                    ? "text-white bg-gradient-to-r from-[#003580] to-[#0072e5] shadow-md"
+                    : "text-gray-600 bg-white"
+                    } rounded-full`}
                   onClick={() => setIsLogin(false)}
                 >
                   Signup
@@ -130,7 +130,7 @@ const LoginRegister = () => {
                     />
                     <button
                       type="button"
-                    //   onClick={handleForgotPasswordRequest}
+                      //   onClick={handleForgotPasswordRequest}
                       className="w-full py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                     >
                       Request OTP
@@ -164,7 +164,7 @@ const LoginRegister = () => {
                     />
                     <button
                       type="button"
-                    //   onClick={handleResetPassword}
+                      //   onClick={handleResetPassword}
                       className="w-full py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                     >
                       Reset Password
@@ -314,11 +314,10 @@ const LoginRegister = () => {
 
               {message && (
                 <div
-                  className={`mt-4 text-center ${
-                    message.includes("failed")
-                      ? "text-red-500"
-                      : "text-green-500"
-                  }`}
+                  className={`mt-4 text-center ${message.includes("failed")
+                    ? "text-red-500"
+                    : "text-green-500"
+                    }`}
                 >
                   {message}
                 </div>
