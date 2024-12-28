@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../utils/const';
-import { FaCartPlus } from 'react-icons/fa'; // Import the cart icon
+import { FaCartPlus } from 'react-icons/fa';
 
 const VendorDashboard = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cart, setCart] = useState({}); // State to manage the cart items
+  const [cartQuantities, setCartQuantities] = useState({}); // State to manage the quantity of each item
 
   useEffect(() => {
-    // Fetch items from the API
     const fetchItems = async () => {
       try {
         const response = await axios.get(`${baseUrl}vendor/items`); // Replace with your actual API endpoint
@@ -25,20 +24,38 @@ const VendorDashboard = () => {
     fetchItems();
   }, []);
 
+  const handleQuantityChange = (itemId, change) => {
+    setCartQuantities((prev) => {
+      const updatedQuantities = { ...prev };
+      const currentQuantity = updatedQuantities[itemId] || 0;
+
+      if (change === -1 && currentQuantity === 0) {
+        return updatedQuantities; // Prevent negative quantities
+      }
+
+      updatedQuantities[itemId] = currentQuantity + change;
+      return updatedQuantities;
+    });
+  };
+
   const handleAddToCart = async (itemId) => {
     try {
-      // Get the vendor token from localStorage
       const vendorToken = localStorage.getItem('vendorToken');
-      
+
       if (!vendorToken) {
-        alert("You are not logged in.");
+        alert('You are not logged in.');
         return;
       }
 
-      // Call the API to add the item to the cart
+      const quantity = cartQuantities[itemId] || 0;
+      if (quantity === 0) {
+        alert('Please select a quantity before adding to the cart.');
+        return;
+      }
+
       const response = await axios.post(
         `${baseUrl}vendor/addToCard`,
-        { productId: itemId, quantity: 1 }, // Assuming quantity is 1 for now
+        { productId: itemId, quantity },
         {
           headers: {
             Authorization: `Bearer ${vendorToken}`,
@@ -46,24 +63,11 @@ const VendorDashboard = () => {
         }
       );
 
-      // Update the cart in the state (response can include updated cart data)
-      setCart(response.data);
+      alert('Item added to cart successfully!'); // Optional success alert
     } catch (err) {
-      console.error("Error adding to cart:", err.message);
+      console.error('Error adding to cart:', err.message);
       setError(err.message);
     }
-  };
-
-  const handleRemoveFromCart = (itemId) => {
-    setCart((prevCart) => {
-      const newCart = { ...prevCart };
-      if (newCart[itemId] > 1) {
-        newCart[itemId] -= 1; // Decrease quantity if more than 1
-      } else {
-        delete newCart[itemId]; // Remove item from cart if quantity is 1
-      }
-      return newCart;
-    });
   };
 
   if (loading) {
@@ -96,25 +100,26 @@ const VendorDashboard = () => {
               <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
               <p className="text-gray-600">{item.description}</p>
               <p className="mt-2 text-gray-800 font-bold">Price: ${item.price}</p>
-              <p className="mt-2 text-sm text-gray-500">{item.category.companyName} - {item.category.productName}</p>
               <div className="flex justify-between items-center mt-4">
                 <span
                   className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    item.status === 'available' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                    item.status === 'available'
+                      ? 'bg-green-200 text-green-800'
+                      : 'bg-red-200 text-red-800'
                   }`}
                 >
                   {item.status}
                 </span>
                 <div className="flex items-center">
                   <button
-                    onClick={() => handleRemoveFromCart(item._id)}
+                    onClick={() => handleQuantityChange(item._id, -1)}
                     className="px-2 py-1 bg-gray-300 text-gray-800 rounded-full mr-2"
                   >
                     -
                   </button>
-                  <span className="text-lg font-semibold">{cart[item._id] || 0}</span>
+                  <span className="text-lg font-semibold">{cartQuantities[item._id] || 0}</span>
                   <button
-                    onClick={() => handleAddToCart(item._id)}
+                    onClick={() => handleQuantityChange(item._id, 1)}
                     className="px-2 py-1 bg-gray-300 text-gray-800 rounded-full ml-2"
                   >
                     +

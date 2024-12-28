@@ -6,6 +6,8 @@ const Cart = () => {
   const [cartData, setCartData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // Manage modal visibility
+  const [orderDetails, setOrderDetails] = useState(null); // Store cart details for the modal
 
   const fetchCart = async () => {
     try {
@@ -28,6 +30,54 @@ const Cart = () => {
       setError("Failed to fetch cart. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCheckout = () => {
+    if (!cartData) {
+      alert("No items in the cart.");
+      return;
+    }
+
+    setOrderDetails({
+      totalItem: cartData.totalItem,
+      totalPrice: cartData.totalPrice,
+      cartItems: cartData.cartItems
+    });
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setOrderDetails(null); // Clear the order details when closing the modal
+  };
+
+  const placeOrder = async () => {
+    try {
+      const vendorToken = localStorage.getItem("vendorToken");
+      if (!vendorToken) {
+        alert("Please login to place an order.");
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${vendorToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseUrl}vendor/createOrder`, 
+        {},
+        config
+      );
+
+      alert("Order placed successfully!");
+      setCartData(null); // Clear the cart after successful order
+      closeModal(); // Close the modal
+    } catch (err) {
+      console.error("Failed to place order:", err.message);
+      alert("Order failed. Please try again.");
     }
   };
 
@@ -67,7 +117,7 @@ const Cart = () => {
       };
 
       await axios.post(
-        `${baseUrl}vendor/removeCartItem`, // Add a route for removing items
+        `${baseUrl}vendor/removeCartItem`,
         { cartItemId },
         config
       );
@@ -112,6 +162,12 @@ const Cart = () => {
                 Total Price: ₹{cartData.totalPrice}
               </h2>
             </div>
+            <button
+              onClick={handleCheckout}
+              className="mt-4 md:mt-0 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
+            >
+              Checkout
+            </button>
           </div>
           {cartData.cartItems.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -163,6 +219,40 @@ const Cart = () => {
           ) : (
             <p className="text-gray-600">Your cart is empty.</p>
           )}
+        </div>
+      )}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
+            <p>Total Items: {orderDetails.totalItem}</p>
+            <p>Total Price: ₹{orderDetails.totalPrice}</p>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Items:</h3>
+              <ul>
+                {orderDetails.cartItems.map((item) => (
+                  <li key={item._id} className="flex justify-between">
+                    <span>{item.item?.name}</span>
+                    <span>Qty: {item.quantity}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={placeOrder}
+                className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600"
+              >
+                Place Order
+              </button>
+              <button
+                onClick={closeModal}
+                className="ml-4 px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
