@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseUrl } from "../utils/const";
 
-const VendorLogin = () => {
+const VendorLogin = ({ setAdminLoggedIn }) => {
   const navigate = useNavigate();
 
   // State for form data and loading/error states
@@ -29,6 +29,8 @@ const VendorLogin = () => {
       if (response.status === 200) {
         // Save token to localStorage
         localStorage.setItem("vendorToken", response.data.token);
+        localStorage.removeItem("adminToken")
+        setAdminLoggedIn(false)
 
         // Navigate to vendor dashboard
         navigate("/vendorDashboard");
@@ -81,9 +83,8 @@ const VendorLogin = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-md ${
-              loading ? "opacity-50" : ""
-            }`}
+            className={`w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded-md ${loading ? "opacity-50" : ""
+              }`}
           >
             {loading ? "Logging in..." : "Login"}
           </button>

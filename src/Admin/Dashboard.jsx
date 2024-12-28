@@ -140,6 +140,13 @@ const Dashboard = () => {
     }
   }, [location.pathname]);
 
+    // Handle logout
+    const handleLogout = () => {
+      localStorage.removeItem("adminToken"); // Remove token from localStorage
+      // setIsLoggedIn(false); // Update state to reflect logged-out status
+      navigate("/login"); // Redirect to login page
+    };
+
   return (
     <div className="flex min-h-screen bg-gray-50 pt-2">
       {/* Sidebar */}
@@ -227,7 +234,7 @@ const Dashboard = () => {
               >
                 <button
                   className="flex items-center space-x-2"
-                //   onClick={handleLogout}
+                  onClick={handleLogout}
                 >
                   <span>
                     <FaSignOutAlt />
