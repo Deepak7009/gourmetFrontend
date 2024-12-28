@@ -139,9 +139,9 @@ const CustomerCareDashboard = () => {
                         {item.name}
                       </h4>
                       <p className="text-gray-600">{item.description}</p>
-                      <p className="mt-2 text-gray-800 font-bold">
+                      {/* <p className="mt-2 text-gray-800 font-bold">
                         Price: ${item.price}
-                      </p>
+                      </p> */}
                       <div className="flex justify-between items-center mt-4">
                         <span
                           className={`px-3 py-1 text-xs font-semibold rounded-full ${item.status === 'available'

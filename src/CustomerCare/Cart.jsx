@@ -8,6 +8,8 @@ const Cart = () => {
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false); // Manage modal visibility
   const [orderDetails, setOrderDetails] = useState(null); // Store cart details for the modal
+  const [vendors, setVendors] = useState([]); // Store vendors for the dropdown
+  const [selectedVendor, setSelectedVendor] = useState(""); // Selected vendor for the order
 
   const fetchCart = async () => {
     try {
@@ -33,6 +35,27 @@ const Cart = () => {
     }
   };
 
+  const fetchVendors = async () => {
+    try {
+      const customerCareToken = localStorage.getItem("customerCareToken");
+      if (!customerCareToken) {
+        alert("Please login to fetch vendors.");
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${customerCareToken}`,
+        },
+      };
+
+      const response = await axios.get(`${baseUrl}customerCare/vendors`, config);
+      setVendors(response.data); // Populate vendors
+    } catch (err) {
+      console.error("Failed to fetch vendors:", err.message);
+    }
+  };
+
   const handleCheckout = () => {
     if (!cartData) {
       alert("No items in the cart.");
@@ -42,17 +65,24 @@ const Cart = () => {
     setOrderDetails({
       totalItem: cartData.totalItem,
       totalPrice: cartData.totalPrice,
-      cartItems: cartData.cartItems
+      cartItems: cartData.cartItems,
     });
     setIsModalOpen(true); // Open the modal
+    fetchVendors(); // Fetch vendors when opening the modal
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setOrderDetails(null); // Clear the order details when closing the modal
+    setSelectedVendor(""); // Reset selected vendor
   };
 
   const placeOrder = async () => {
+    if (!selectedVendor) {
+      alert("Please select a vendor before placing the order.");
+      return;
+    }
+
     try {
       const customerCareToken = localStorage.getItem("customerCareToken");
       if (!customerCareToken) {
@@ -67,8 +97,8 @@ const Cart = () => {
       };
 
       const response = await axios.post(
-        `${baseUrl}customerCare/createOrder`, 
-        {},
+        `${baseUrl}customerCare/createOrder`,
+        { vendorId: selectedVendor },
         config
       );
 
@@ -158,9 +188,6 @@ const Cart = () => {
               <h2 className="text-lg font-semibold">
                 Total Items: {cartData.totalItem}
               </h2>
-              <h2 className="text-lg font-semibold">
-                Total Price: ₹{cartData.totalPrice}
-              </h2>
             </div>
             <button
               onClick={handleCheckout}
@@ -180,13 +207,7 @@ const Cart = () => {
                     {cartItem.item?.name}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Price: ₹{cartItem.price}
-                  </p>
-                  <p className="text-sm text-gray-600">
                     Quantity: {cartItem.quantity}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Subtotal: ₹{cartItem.price * cartItem.quantity}
                   </p>
                   <div className="flex space-x-2 mt-2">
                     <button
@@ -226,7 +247,6 @@ const Cart = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
             <p>Total Items: {orderDetails.totalItem}</p>
-            <p>Total Price: ₹{orderDetails.totalPrice}</p>
             <div className="mt-4">
               <h3 className="text-lg font-semibold">Items:</h3>
               <ul>
@@ -237,6 +257,21 @@ const Cart = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Select Vendor:</h3>
+              <select
+                className="w-full border border-gray-300 p-2 rounded-lg"
+                value={selectedVendor}
+                onChange={(e) => setSelectedVendor(e.target.value)}
+              >
+                <option value="">-- Select Vendor --</option>
+                {vendors.map((vendor) => (
+                  <option key={vendor._id} value={vendor._id}>
+                    {vendor.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="mt-4 flex justify-end">
               <button

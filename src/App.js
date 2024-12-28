@@ -31,7 +31,7 @@ function App() {
   return (
     <>
       {/* <Home /> */}
-      {!isAdminRoute && !isVendorRoute && <Navbar />}
+      {!isAdminRoute && !isVendorRoute && <Navbar customerCareLoggedIn={customerCareLoggedIn} />}
       {/* {!adminLoggedIn && <Navbar customerCareLoggedIn={customerCareLoggedIn} />} */}
       <Routes>
         <Route path="/admin/*" element={<Dashboard />} />
