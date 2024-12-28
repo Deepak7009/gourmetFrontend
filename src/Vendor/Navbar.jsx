@@ -11,6 +11,8 @@ const Navbar = () => {
     const token = localStorage.getItem("vendorToken");
     if (token) {
       setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 
