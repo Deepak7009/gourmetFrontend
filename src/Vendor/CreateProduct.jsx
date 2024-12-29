@@ -7,7 +7,7 @@ const CreateProduct = () => {
     name: "",
     companyName: "",
     productName: "",
-    // price: "",
+    price: "",
     description: "",
     quantity: "",
     status: "available",
@@ -31,9 +31,9 @@ const CreateProduct = () => {
     setError("");
     setSuccess("");
 
-    const adminToken = localStorage.getItem("adminToken");
-    if (!adminToken) {
-      setError("Admin token not found. Please log in again.");
+    const vendorToken = localStorage.getItem("vendorToken");
+    if (!vendorToken) {
+      setError("vendor token not found. Please log in again.");
       setLoading(false);
       return;
     }
@@ -51,9 +51,9 @@ const CreateProduct = () => {
     }
 
     try {
-      const response = await axios.post(`${baseUrl}admin/item`, data, {
+      const response = await axios.post(`${baseUrl}vendor/item`, data, {
         headers: {
-          Authorization: `Bearer ${adminToken}`,
+          Authorization: `Bearer ${vendorToken}`,
           "Content-Type": "multipart/form-data",
         },
       });

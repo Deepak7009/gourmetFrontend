@@ -13,13 +13,15 @@ import {
 // import { baseUrl } from "../../../utils/const";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
-import CreateVendor from "./CreateVendor";
-import GetAllVendors from "./GetAllVendors";
+import CreateCustomerCare from "./CreateCustomerCare";
+import GetAllCustomerCares from "./GetAllCustomerCare";
 import CreateProduct from "./CreateProduct";
 import GetAllProducts from "./GetAllProducts";
 import GetAllOrders from "./GetAllOrders";
 import Profile from "./Profile";
 import ChangePasswords from "./ChangePasswords";
+import CreateVendor from "./CreateVendor";
+import GetAllVendors from "./GetAllVendors";
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -33,6 +35,11 @@ const Dashboard = () => {
 
   // Close sidebar on outside click
   useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    if (!adminToken) {
+      navigate('/customerCareDashboard')
+    }
+    
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         setSidebarOpen(false);
@@ -47,31 +54,31 @@ const Dashboard = () => {
 
   const cards = dashboardData
     ? [
-        {
-          title: "Total Adv",
-          count: dashboardData.adv.total,
-          section: "Dashboard",
-          pageLink: "/admin/advStatus?stat=all",
-        },
-        {
-          title: "Pending Adv",
-          count: dashboardData.adv.pending,
-          section: "Dashboard",
-          pageLink: "/marketerDashboard/advStatus?stat=pending",
-        },
-        {
-          title: "Completed Adv",
-          count: dashboardData.adv.completed,
-          section: "Dashboard",
-          pageLink: "/marketerDashboard/advStatus?stat=completed",
-        },
-        {
-          title: "Rejected Adv",
-          count: dashboardData.adv.rejected,
-          section: "Dashboard",
-          pageLink: "/marketerDashboard/advStatus?stat=rejected",
-        },
-      ]
+      {
+        title: "Total Adv",
+        count: dashboardData.adv.total,
+        section: "Dashboard",
+        pageLink: "/admin/advStatus?stat=all",
+      },
+      {
+        title: "Pending Adv",
+        count: dashboardData.adv.pending,
+        section: "Dashboard",
+        pageLink: "/marketerDashboard/advStatus?stat=pending",
+      },
+      {
+        title: "Completed Adv",
+        count: dashboardData.adv.completed,
+        section: "Dashboard",
+        pageLink: "/marketerDashboard/advStatus?stat=completed",
+      },
+      {
+        title: "Rejected Adv",
+        count: dashboardData.adv.rejected,
+        section: "Dashboard",
+        pageLink: "/marketerDashboard/advStatus?stat=rejected",
+      },
+    ]
     : [];
 
   const filteredCards = cards.filter((card) => card.section === activeSection);
@@ -80,6 +87,16 @@ const Dashboard = () => {
       name: "Dashboard",
       icon: <FaHome />,
       route: "/admin",
+    },
+    {
+      name: "Create CustomerCare",
+      icon: <FaUser />,
+      route: "/admin/createCustomerCare",
+    },
+    {
+      name: "All CustomerCares",
+      icon: <FaCog />,
+      route: "/admin/allCustomerCares",
     },
     {
       name: "Create Vendor",
@@ -135,14 +152,20 @@ const Dashboard = () => {
     }
   }, [location.pathname]);
 
+    // Handle logout
+    const handleLogout = () => {
+      localStorage.removeItem("adminToken"); // Remove token from localStorage
+      // setIsLoggedIn(false); // Update state to reflect logged-out status
+      navigate("/login"); // Redirect to login page
+    };
+
   return (
     <div className="flex min-h-screen bg-gray-50 pt-2">
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-all duration-300 ease-in-out lg:translate-x-0 lg:relative z-10`}
+        className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } transition-all duration-300 ease-in-out lg:translate-x-0 lg:relative z-10`}
       >
         <div className="p-6 bg-blue-600 text-white font-bold text-lg">
           Admin Panal
@@ -154,11 +177,10 @@ const Dashboard = () => {
               {menuItems.map((item, index) => (
                 <li
                   key={index}
-                  className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
-                    activeSection === item.name
-                      ? "bg-blue-500 text-white"
-                      : "text-gray-700"
-                  }`}
+                  className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${activeSection === item.name
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-700"
+                    }`}
                 >
                   <button
                     className="flex items-center space-x-2"
@@ -180,11 +202,10 @@ const Dashboard = () => {
               {accountItems.map((item, index) => (
                 <li
                   key={index}
-                  className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
-                    activeSection === item.name
-                      ? "bg-blue-500 text-white"
-                      : "text-gray-700"
-                  }`}
+                  className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${activeSection === item.name
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-700"
+                    }`}
                 >
                   <button
                     className="flex items-center space-x-2"
@@ -218,15 +239,14 @@ const Dashboard = () => {
               </li> */}
               <li
                 key={3}
-                className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${
-                  activeSection === "Log out"
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-700"
-                }`}
+                className={`hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 ${activeSection === "Log out"
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-700"
+                  }`}
               >
                 <button
                   className="flex items-center space-x-2"
-                  //   onClick={handleLogout}
+                  onClick={handleLogout}
                 >
                   <span>
                     <FaSignOutAlt />
@@ -263,17 +283,15 @@ const Dashboard = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(!isSidebarOpen)}
-              className={`lg:hidden mb-4 p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ${
-                isSidebarOpen ? "hidden" : ""
-              } `}
+              className={`lg:hidden mb-4 p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ${isSidebarOpen ? "hidden" : ""
+                } `}
             >
               ☰
             </button>
             <button
               onClick={() => setSidebarOpen(!isSidebarOpen)}
-              className={`lg:hidden mb-4 p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ${
-                isSidebarOpen ? "" : "hidden"
-              } `}
+              className={`lg:hidden mb-4 p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition-colors duration-300 ${isSidebarOpen ? "" : "hidden"
+                } `}
             >
               ☰
             </button>
@@ -310,6 +328,8 @@ const Dashboard = () => {
         {/* Nested route rendering */}
         <div className="p-6 w-full overflow-scroll">
           <Routes>
+            <Route path="createCustomerCare" element={<CreateCustomerCare />} />
+            <Route path="allCustomerCares" element={<GetAllCustomerCares />} />
             <Route path="createVendor" element={<CreateVendor />} />
             <Route path="allVendors" element={<GetAllVendors />} />
             <Route path="createProduct" element={<CreateProduct />} />

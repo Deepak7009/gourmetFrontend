@@ -20,19 +20,19 @@ const GetAllProduct = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const adminToken = localStorage.getItem("adminToken");
+    //   const vendorToken = localStorage.getItem("vendorToken");
 
-      if (!adminToken) {
-        setError("Admin token not found. Please log in again.");
-        setLoading(false);
-        return;
-      }
+    //   if (!vendorToken) {
+    //     setError("Vendor token not found. Please log in again.");
+    //     setLoading(false);
+    //     return;
+    //   }
 
       try {
-        const response = await axios.get(`${baseUrl}admin/items`, {
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
+        const response = await axios.get(`${baseUrl}vendor/items`, {
+        //   headers: {
+        //     Authorization: `Bearer ${vendorToken}`,
+        //   },
         });
         setProducts(response.data);
         setLoading(false);
@@ -79,20 +79,20 @@ const GetAllProduct = () => {
 
 
   const handleUpdate = async () => {
-    const adminToken = localStorage.getItem("adminToken");
-    if (!adminToken) {
-      alert("Admin token not found. Please log in again.");
+    const vendorToken = localStorage.getItem("vendorToken");
+    if (!vendorToken) {
+      alert("vendor token not found. Please log in again.");
       return;
     }
 
 
     try {
       await axios.put(
-        `${baseUrl}admin/update-item?itemId=${selectedProduct._id}`,
+        `${baseUrl}vendor/update-item?itemId=${selectedProduct._id}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${adminToken}`,
+            Authorization: `Bearer ${vendorToken}`,
             "Content-Type": "multipart/form-data",
           },
         }
