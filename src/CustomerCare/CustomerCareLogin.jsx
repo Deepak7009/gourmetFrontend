@@ -34,7 +34,7 @@ const CustomerCareLogin = ({ setAdminLoggedIn, setCustomerCareLoggedIn }) => {
         setCustomerCareLoggedIn(true);
 
         // Navigate to customerCare dashboard
-        navigate("/customerCareDashboard");
+        navigate("/");
       }
     } catch (err) {
       // Handle error

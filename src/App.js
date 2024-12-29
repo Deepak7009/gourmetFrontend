@@ -50,7 +50,7 @@ function App() {
           }
         />
         <Route path="/vendorLogin" element={<VendorLogin />} />
-        <Route path="/customerCareDashboard" element={<CustomerCare />} />
+        <Route path="/" element={<CustomerCare />} />
         <Route
           path="/customerCareDashboardNew"
           element={<CustomerCareAllProducts />}

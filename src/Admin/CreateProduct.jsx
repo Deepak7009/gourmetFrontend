@@ -7,7 +7,7 @@ const CreateProduct = () => {
     name: "",
     companyName: "",
     productName: "",
-    price: "",
+    // price: "",
     description: "",
     quantity: "",
     status: "available",
@@ -42,7 +42,7 @@ const CreateProduct = () => {
     data.append("name", formData.name);
     data.append("category[companyName]", formData.companyName);
     data.append("category[productName]", formData.productName);
-    data.append("price", formData.price);
+    // data.append("price", formData.price);
     data.append("description", formData.description);
     data.append("quantity", formData.quantity);
     data.append("status", formData.status);
@@ -62,7 +62,7 @@ const CreateProduct = () => {
         name: "",
         companyName: "",
         productName: "",
-        price: "",
+        // price: "",
         description: "",
         quantity: "",
         status: "available",
@@ -114,7 +114,7 @@ const CreateProduct = () => {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        <div>
+        {/* <div>
           <label className="block text-gray-700">Price</label>
           <input
             type="number"
@@ -124,7 +124,7 @@ const CreateProduct = () => {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-        </div>
+        </div> */}
         <div>
           <label className="block text-gray-700">Description</label>
           <textarea
